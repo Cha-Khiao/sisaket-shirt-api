@@ -1,4 +1,3 @@
-// src/routes/paymentRoutes.ts
 import express, { Request, Response } from 'express';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
@@ -7,7 +6,6 @@ import Order from '../models/Order';
 
 const router = express.Router();
 
-// Config Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -16,10 +14,10 @@ cloudinary.config({
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 } // จำกัดไม่เกิน 5MB
+  limits: { fileSize: 5 * 1024 * 1024 } 
 });
 
-router.post('/upload-slip', upload.single('slip'), async (req: any, res: any) => { // ใช้ any ตรงนี้แก้ขัดไปก่อนได้ครับ
+router.post('/upload-slip', upload.single('slip'), async (req: any, res: any) => {
   try {
     const { orderId } = req.body;
     
@@ -32,7 +30,6 @@ router.post('/upload-slip', upload.single('slip'), async (req: any, res: any) =>
       return res.status(404).json({ error: 'ไม่พบคำสั่งซื้อ' });
     }
 
-    // Upload Logic
     const uploadToCloudinary = () => {
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
@@ -43,7 +40,6 @@ router.post('/upload-slip', upload.single('slip'), async (req: any, res: any) =>
           },
           (error, result) => {
             if (error) {
-              // 🔴 เพิ่มบรรทัดนี้ เพื่อดู error ตัวจริงใน Terminal
               console.error("🔥 Cloudinary Upload Error:", error); 
               reject(error);
             } else {
@@ -57,7 +53,6 @@ router.post('/upload-slip', upload.single('slip'), async (req: any, res: any) =>
 
     const result: any = await uploadToCloudinary();
 
-    // ✅ แก้ไขจุดนี้: ใช้ paymentProofUrl ให้ตรงกับ Model Order.ts
     order.status = 'verification';
     order.paymentProofUrl = result.secure_url; 
     
