@@ -1,4 +1,3 @@
-// src/models/Order.ts
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IOrder extends Document {
@@ -7,14 +6,18 @@ export interface IOrder extends Document {
   address?: string;
   isShipping: boolean;
   totalPrice: number;
-  status: string;
+  paymentProofUrl?: string; 
+  status: 'pending_payment' | 'verification' | 'shipping' | 'completed' | 'cancelled';
   items: Array<{
-    type: string;
+    productId: mongoose.Types.ObjectId; 
+    productName: string;
     size: string;
     quantity: number;
     price: number;
+    imageUrl?: string;
   }>;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const OrderSchema: Schema = new Schema({
@@ -23,16 +26,21 @@ const OrderSchema: Schema = new Schema({
   address: { type: String, default: '' },
   isShipping: { type: Boolean, default: false },
   totalPrice: { type: Number, required: true },
+  
+  paymentProofUrl: { type: String, default: null },
+
   status: { 
     type: String, 
     enum: ['pending_payment', 'verification', 'shipping', 'completed', 'cancelled'], 
     default: 'pending_payment' 
   },
   items: [{
-    type: { type: String, required: true },
+    productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, 
+    productName: { type: String, required: true },
     size: { type: String, required: true },
     quantity: { type: Number, required: true },
-    price: { type: Number, required: true }
+    price: { type: Number, required: true },
+    imageUrl: { type: String }
   }]
 }, { timestamps: true });
 
