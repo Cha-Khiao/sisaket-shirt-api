@@ -26,7 +26,6 @@ const ProductSchema: Schema = new Schema({
   imageUrl: { type: String, required: true }, 
   isActive: { type: Boolean, default: true },
   
-  // Array ของ Stock แยกตามไซส์
   stock: [{
     size: { type: String, required: true },
     quantity: { type: Number, required: true, default: 0 },
