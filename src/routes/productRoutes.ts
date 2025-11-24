@@ -86,12 +86,13 @@ router.post('/', authenticateToken, requireAdmin, upload.single('image'), async 
 router.put('/:id', authenticateToken, requireAdmin, upload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, isActive } = req.body;
+    const { name, type, description, price, isActive } = req.body;
     
     const product = await Product.findById(id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
 
     if (name) product.name = name;
+    if (type) product.type = type;
     if (description) product.description = description;
     if (price) product.price = Number(price);
     if (isActive !== undefined) {
