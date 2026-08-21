@@ -15,9 +15,12 @@ API สำหรับระบบจัดการคำสั่งซื้�
 
 ### Authentication & Authorization
 - ระบบ Login สำหรับ Admin และ User
-- Auto-register สำหรับ User ใหม่ (ใช้เบอร์โทรศัพท์)
+- Auto-register สำหรับ User ใหม่ (ใช้เบอร์โทรศัพท์ 10 หลักเท่านั้น)
+- Google OAuth Login
 - JWT Token-based authentication
 - Role-based access control (Admin/User)
+- ระบบจัดการโปรไฟล์ (ชื่อ, เบอร์โทร, ที่อยู่, รูปโปรไฟล์)
+- ระบบลบบัญชี (มีการตรวจสอบคำสั่งซื้อค้างชำระ และป้องกัน Admin ลบตัวเอง)
 
 ### Product Management
 - สร้าง แก้ไข ลบสินค้า (Admin only)
@@ -92,6 +95,11 @@ npm run dev
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
 | POST | `/login` | Login (Admin/User) | ❌ |
+| POST | `/google-login` | Login ด้วย Google | ❌ |
+| GET | `/profile` | ดูข้อมูลโปรไฟล์ | ✅ |
+| PUT | `/profile` | แก้ไขโปรไฟล์ | ✅ |
+| DELETE | `/profile` | ลบบัญชี (ไม่ได้สำหรับ Admin) | ✅ |
+| POST | `/profile/upload-image` | อัปโหลดรูปโปรไฟล์ | ✅ |
 | POST | `/seed-admin` | สร้าง Admin ใหม่ | ❌ |
 
 **Login Request:**
@@ -261,9 +269,13 @@ slip: <file>
 {
   username?: string,        // ใช้สำหรับ Admin (unique)
   phone?: string,           // ใช้สำหรับ User (unique)
-  password: string,         // Hashed password
+  email?: string,           // สำหรับ Google Login (unique)
+  password?: string,        // Hashed password
   name: string,             // ชื่อแสดงผล (default: 'Member')
   role: 'admin' | 'user',   // บทบาท (default: 'user')
+  address?: string,         // ที่อยู่ (formatted)
+  addressData?: object,     // ข้อมูลที่อยู่แบบแยกฟิลด์
+  profileImage?: string,    // URL รูปโปรไฟล์ (Cloudinary)
   createdAt: Date,
   updatedAt: Date
 }
@@ -291,6 +303,7 @@ slip: <file>
 ### Order Schema
 ```typescript
 {
+  userId?: ObjectId,               // อ้างอิง User (เจ้าของ Order)
   customerName: string,            // ชื่อลูกค้า
   phone: string,                   // เบอร์โทร
   address?: string,                // ที่อยู่จัดส่ง
