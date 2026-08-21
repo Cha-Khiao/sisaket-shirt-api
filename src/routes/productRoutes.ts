@@ -11,7 +11,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const uploadToCloudinary = (buffer: Buffer) => {
   return new Promise<string>((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder: 'sisaket-charity/products' },
+      { folder: 'sisaket-shirt/products' },
       (error, result) => {
         if (error) {
             console.error("Cloudinary Upload Error:", error);

@@ -34,7 +34,7 @@ router.post('/upload-slip', upload.single('slip'), async (req: any, res: any) =>
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           {
-            folder: 'sisaket-charity/slips',
+            folder: 'sisaket-shirt/slips',
             public_id: `slip_${orderId}_${Date.now()}`,
             resource_type: 'image',
           },

@@ -7,7 +7,7 @@ import { authenticateToken, requireAdmin, AuthRequest } from '../middleware/auth
 const router = express.Router();
 
 // 1. สร้างออร์เดอร์ใหม่
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -42,6 +42,7 @@ router.post('/', authenticateToken, async (req, res) => {
     calculatedTotalPrice += shippingCost;
 
     const newOrder = new Order({
+      userId: req.user.id,
       customerName, phone, address, isShipping,
       status: 'pending_payment',
       items: orderItems,
@@ -67,7 +68,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
     try {
         let filter = {};
         if (req.user.role !== 'admin') {
-            filter = { phone: req.user.name }; 
+            filter = { userId: req.user.id };
         }
         const orders = await Order.find(filter).sort({ createdAt: -1 });
         res.json(orders);
