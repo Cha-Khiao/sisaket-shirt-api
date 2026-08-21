@@ -31,6 +31,10 @@ app.get('/', (req, res) => {
   res.send('Sisaket Charity API is Running!');
 });
 
+app.get('/health', (req, res) => {
+  res.send('ok');
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/products', productRoutes);
